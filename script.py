@@ -1,11 +1,14 @@
 import os
-import telebot
+
+from telebot.async_telebot import AsyncTeleBot
+
 import sqlite3
 from sqlite3 import Error
 
 
 myToken = os.environ.get("BOT_API_KEY")
-bot = telebot.TeleBot(myToken)
+bot = AsyncTeleBot(myToken)
+
 
 def makeDBConnection(dbFile):
   conn = None
@@ -15,8 +18,8 @@ def makeDBConnection(dbFile):
     print(e)
   return conn
 
-connection = makeDBConnection("./main.db")
-cursor = connection.cursor()
+# connection = makeDBConnection("./main.db")
+# cursor = connection.cursor()
 
 def newUser(name, email, telegramID):
   checkQuerry = 'select * from users where telegramID = "{telegramID}"'.format(telegramID=telegramID)
@@ -43,16 +46,20 @@ def newUser(name, email, telegramID):
 
   
 @bot.message_handler(commands=["start", "help"])
-def welcomeUser(message):
-  bot.reply_to(message, "Hello Bitch")
+async def welcomeUser(message):
+  await bot.reply_to(message, "Hello Bitch")
   
 
-bot.infinity_polling()
 
-@bot.message_handler(commands=["register"])
-def register(message):
-  newUser()
-data = cursor.execute("select * from users")
-for each in data :
-  print(each)
-connection.close()
+# @bot.message_handler(commands=["register"])
+# def register(message):
+#   newUser()
+  
+  
+# data = cursor.execute("select * from users")
+# for each in data :
+  # print(each)
+  
+import asyncio
+asyncio.run(bot.polling())
+# connection.close()
